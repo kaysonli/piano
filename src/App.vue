@@ -16,6 +16,8 @@
 </template>
 
 <script>
+var attachFastClick = require('fastclick');
+attachFastClick.attach(document.body);
 import Group from './components/Group'
 const prefix = 'data:audio/mpeg;base64,';
 import {notes} from './notes.js'
