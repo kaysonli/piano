@@ -1,20 +1,19 @@
 <template>
     <div class="group">
-        <button class="white" v-for="n in 7" data-note="{{n}}" @click="play"></button>
-        <button class="black" v-for="n in 5"></button>
-        <audio src="../assets/audio/German Concert D 021 083.ogg"></audio>
-        <div class="audios">
-            <!-- <audio src="{{aud}}" v-for="aud in audios"></audio> -->
-        </div>
+        <!-- <button class="white" v-for="n in 7" data-note="{{n}}" @click="play"></button>
+        <button class="black" v-for="n in 5"></button> -->
+        <button :class="{'white': whites.indexOf(n) > -1, 'black': blacks.indexOf(n) > -1}" v-for="n in 12" :style="{ left: calcLeft(n) + '%' }" data-note="{{start+n}}" @click="play(start+n)"><span></span></button>
     </div>
 </template>
 
 <script>
+import {notes} from '../notes.js';
+const prefix = 'data:audio/mpeg;base64,';
 export default {
     props: {
         start: {
             type: Number,
-            default: 1
+            default: 0
         }
     },
     data() {
@@ -23,26 +22,24 @@ export default {
             // with hot-reload because the reloaded component
             // preserves its current state and we are modifying
             // its initial state.
+            blacks: [1, 3, 6, 8, 10],
+            whites: [0, 2, 4, 5, 7, 9, 11]
         }
     },
     computed: {
-        audios() {
-            let files = [];
-            for (var i = 0, ln = 12; i < ln; i++) {
-                files.push(this.parseSrc(i));
-            }
-            return files;
-        }
     },
     methods: {
-        play(arg) {
-            console.log(arg.target);
+        play(index) {
+            var audio = new Audio(prefix + notes[index]);
+            audio.play();
         },
-        parseSrc(index) {
-            let number = this.start + index;
-            let ordinal = ('000' + number).slice(-3);
-            let fileName = `../assets/audio/German Concert D ${ordinal} 083.ogg`;
-            return fileName;
+        calcLeft(index) {
+            var unit = 14.29;
+            var i = this.blacks.indexOf(index);
+            if(i < 2) {
+                return unit * (0.75 + i);
+            }
+            return unit * (1.75 + i);
         }
     }
 }
@@ -54,9 +51,10 @@ export default {
         font-size: 0;
         position: relative;
         display: flex;
+        flex-grow: 1;
     }
     button {
-        /*width: 14.29%;*/
+        width: 14.29%;
         flex: 1;
         height: 300px;
         display: inline-block;
