@@ -1,20 +1,51 @@
 <template>
     <div id="app">
+        <div class="control">
+            <input type="checkbox" v-model="full" id="full"><label for="full">完整键盘</label>
+        </div>
         <div class="keyboard">
-            <group :start="12"></group>
-            <group :start="24"></group>
-            <group :start="36"></group>
-            <group :start="48"></group>
+            <group :group="0" v-show="full"></group>
+            <group :group="1" v-show="full"></group>
+            <group :group="2"></group>
+            <group :group="3"></group>
+            <group :group="4"></group>
+            <group :group="5" v-show="full"></group>
+            <group :group="6" v-show="full"></group>
         </div>
     </div>
 </template>
 
 <script>
-import Hello from './components/Hello'
 import Group from './components/Group'
+const prefix = 'data:audio/mpeg;base64,';
+import {notes} from './notes.js'
+const groupKeys = 12;
+const base = 2;
 export default {
     components: {
-        Hello, Group
+        Group
+    },
+    data() {
+        return {
+            full: false
+        }
+    },
+    methods: {
+        play(keyCode) {
+            let keys = [90,88,67,86,66,78,77,65,83,68,70,71,72,74,81,87,69,82,84,89,85];
+            if(keys.indexOf(keyCode) < 0) {
+                return;
+            }
+            let whites = [0, 2, 4, 5, 7, 9, 11];
+            let index = base + 2 * groupKeys + whites[keys.indexOf(keyCode) % 7] + parseInt(keys.indexOf(keyCode) / 7)*groupKeys;
+            let audio = new Audio(prefix + notes[index]);
+            audio.play();
+        }
+    },
+    ready() {
+        document.body.addEventListener('keydown', e => {
+            this.play(e.keyCode);
+        });
     }
 }
 </script>
@@ -31,5 +62,9 @@ body {
 .keyboard {
     display: flex;
     margin: 20px;
+}
+.control {
+    text-align: center;
+    margin-top: 50px;
 }
 </style>

@@ -1,17 +1,17 @@
 <template>
     <div class="group">
-        <!-- <button class="white" v-for="n in 7" data-note="{{n}}" @click="play"></button>
-        <button class="black" v-for="n in 5"></button> -->
-        <button :class="{'white': whites.indexOf(n) > -1, 'black': blacks.indexOf(n) > -1}" v-for="n in 12" :style="{ left: calcLeft(n) + '%' }" data-note="{{start+n}}" @click="play(start+n)"><span></span></button>
+        <button :class="{'white': whites.indexOf(n) > -1, 'black': blacks.indexOf(n) > -1}" v-for="n in 12" :style="{ left: calcLeft(n) + '%' }" data-note="{{start+n}}" @click="play(start+n)"><span v-show="n === 0">C</span></button>
     </div>
 </template>
 
 <script>
 import {notes} from '../notes.js';
 const prefix = 'data:audio/mpeg;base64,';
+const base = 2;
+const keys = 12;
 export default {
     props: {
-        start: {
+        group: {
             type: Number,
             default: 0
         }
@@ -27,10 +27,13 @@ export default {
         }
     },
     computed: {
+        start() {
+            return this.group * keys;
+        }
     },
     methods: {
         play(index) {
-            var audio = new Audio(prefix + notes[index]);
+            var audio = new Audio(prefix + notes[index + base]);
             audio.play();
         },
         calcLeft(index) {
@@ -40,6 +43,9 @@ export default {
                 return unit * (0.75 + i);
             }
             return unit * (1.75 + i);
+        },
+        click(index) {
+
         }
     }
 }
@@ -63,7 +69,12 @@ export default {
         padding: 0;
         box-sizing: border-box;
     }
-    .white:active {
+    button > span {
+        position: absolute;
+        bottom: 10px;
+    }
+    .white:active,
+    .white.active {
         background: #ececec;
     }
     .white {
