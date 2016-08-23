@@ -5,9 +5,10 @@
 </template>
 
 <script>
-import {notes} from '../notes.js';
+var load = require("bundle?lazy!../notes.js");
+// import {notes} from '../notes.js';
 const prefix = 'data:audio/mpeg;base64,';
-const base = 2;
+const base = 0;
 const keys = 12;
 export default {
     props: {
@@ -33,8 +34,11 @@ export default {
     },
     methods: {
         play(index) {
-            var audio = new Audio(prefix + notes[index + base]);
-            audio.play();
+            load(module => {
+                let notes = module.notes;
+                var audio = new Audio(prefix + notes[index + base]);
+                audio.play();
+            })
         },
         calcLeft(index) {
             var unit = 14.29;
